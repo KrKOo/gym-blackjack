@@ -21,8 +21,8 @@ def on_generation(ga_instance):
         print(f"Generation: {gen}")
         best_solution, best_fitness, _ = ga_instance.best_solution()
         print(f"Fitness: {best_fitness:.2f}")
-        plot_strategy(best_solution, filename=f"data/strategy_GA_{gen}.png")
-        ga_instance.plot_fitness(filename=f"data/fitness_GA_{gen}.png")
+        plot_strategy(best_solution, filename=f"data/stats/strategy_GA_{gen}.png")
+        ga_instance.plot_fitness(save_dir="data/stats")
 
 
 # GA konfigurácia
