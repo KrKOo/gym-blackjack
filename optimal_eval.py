@@ -14,7 +14,5 @@ res = fitness(
 	episodes=500
 )
 
-# plot_strategy(OPTIMAL_POLICY, usable_ace=True)
-
-
+plot_strategy(OPTIMAL_POLICY)
 print(res)

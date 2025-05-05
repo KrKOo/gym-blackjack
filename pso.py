@@ -27,5 +27,4 @@ final_policy = (best_policy_vector > 0.5).astype(int)
 print(f"\nNajlepšie skóre: {-best_score:.3f}")
 
 # Vykreslenie politiky
-plot_strategy(final_policy, usable_ace=False)
-plot_strategy(final_policy, usable_ace=True)
+plot_strategy(final_policy)

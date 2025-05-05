@@ -51,26 +51,41 @@ def fitness(env, policy, episodes=500):
         total_reward += reward
     return total_reward / episodes
 
-def plot_strategy(policy, usable_ace=False):
-    player_sums = list(range(12, 22))   # iba zmysluplné súčty
+def plot_strategy(policy, filename=None):
+    player_sums = list(range(12, 22))   # meaningful player totals
     dealer_cards = list(range(1, 11))
-    action_matrix = np.zeros((len(player_sums), len(dealer_cards)))
+    usable_ace_options = [True, False]
 
-    for i, ps in enumerate(player_sums):
-        for j, dc in enumerate(dealer_cards):
-            state = (ps, dc, usable_ace)
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6), sharey=True,
+                             gridspec_kw={'width_ratios': [1, 1], 'wspace': 0.1})
 
-            action = policy_action(policy, state)
-            action_matrix[i, j] = action
+    # Create a separate axis for the colorbar
+    cbar_ax = fig.add_axes([0.92, 0.15, 0.02, 0.7])  # [left, bottom, width, height]
 
-    title = f"Strategy Heatmap (Usable Ace: {usable_ace})"
-    plt.figure(figsize=(10, 6))
-    plt.imshow(action_matrix, cmap='coolwarm', aspect='auto', origin='lower')
-    plt.colorbar(ticks=[0, 1], label="Action (0=Stick, 1=Hit)")
-    plt.xticks(np.arange(len(dealer_cards)), dealer_cards)
-    plt.yticks(np.arange(len(player_sums)), player_sums)
-    plt.xlabel("Dealer's Visible Card")
-    plt.ylabel("Player Sum")
-    plt.title(title)
-    plt.grid(False)
-    plt.show()
+    for idx, usable_ace in enumerate(usable_ace_options):
+        action_matrix = np.zeros((len(player_sums), len(dealer_cards)))
+
+        for i, ps in enumerate(player_sums):
+            for j, dc in enumerate(dealer_cards):
+                state = (ps, dc, usable_ace)
+                action = policy_action(policy, state)
+                action_matrix[i, j] = action
+
+        ax = axes[idx]
+        im = ax.imshow(action_matrix, cmap='coolwarm', aspect='auto', origin='lower', vmin=0, vmax=1)
+        ax.set_xticks(np.arange(len(dealer_cards)))
+        ax.set_xticklabels(dealer_cards)
+        ax.set_yticks(np.arange(len(player_sums)))
+        ax.set_yticklabels(player_sums)
+        ax.set_xlabel("Dealer's Visible Card")
+        if idx == 0:
+            ax.set_ylabel("Player Sum")
+        ax.set_title(f"Usable Ace: {usable_ace}")
+
+    fig.suptitle("Strategy Heatmap (0=Stick, 1=Hit)", fontsize=16)
+    fig.colorbar(im, cax=cbar_ax, ticks=[0, 1], label='Action')
+    plt.subplots_adjust(right=0.9)
+    if filename:
+        plt.savefig(filename)
+    else:
+        plt.show()
