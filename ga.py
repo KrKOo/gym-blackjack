@@ -22,24 +22,25 @@ def on_generation(ga_instance):
         best_solution, best_fitness, _ = ga_instance.best_solution()
         print(f"Fitness: {best_fitness:.2f}")
         plot_strategy(best_solution, filename=f"data/stats/strategy_GA_{gen}.png")
-        ga_instance.plot_fitness(save_dir="data/stats")
+        ga_instance.plot_fitness(save_dir=f"data/stats/fiatness_GA_{gen}")
+        ga_instance.save(f"data/models/GA_{gen}")
 
 
 # GA konfigurácia
 ga_instance = pygad.GA(
-    num_generations=300,
+    num_generations=30000,
     num_parents_mating=30,
     fitness_func=fitness_func,
     initial_population=np.random.randint(0, 2, size=(50, chromosome_length)),
     sol_per_pop=50,
-    keep_parents=25,
+    keep_parents=15,
     num_genes=chromosome_length,
     gene_type=int,
     init_range_low=0,
     init_range_high=2,
-    mutation_percent_genes=50,
+    mutation_percent_genes=40,
     mutation_type="inversion",
-    crossover_type="two_points",
+    crossover_type="single_point",
     parent_selection_type="tournament",
     on_generation=on_generation
 )

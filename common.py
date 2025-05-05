@@ -32,27 +32,33 @@ for i, (player, dealer, usable_ace) in enumerate(STATES):
             OPTIMAL_POLICY[i] = 1
             
 def policy_action(policy, observation):
-    index = STATE_TO_INDEX.get(observation)
+    obs = (min(observation[0], 21), observation[1], observation[2])
+    index = STATE_TO_INDEX.get(obs)
     if index is None:
         print(f"Unknown state: {observation}")
         return 0
     return int(round(policy[index]))
 
-def fitness(env, policy, episodes=500):
+def fitness(env, policy, episodes=500, runs=1):
     total_reward = 0
     episodes = 500
-    for _ in range(episodes):
-        obs, _ = env.reset()
-        done = False
-        while not done:
-            action = policy_action(policy, obs)
-            obs, reward, terminated, truncated, _ = env.step(action)
-            done = terminated or truncated
-        total_reward += reward
-    return total_reward / episodes
+    results = []
+
+    for _ in range(runs):
+        for _ in range(episodes):
+            obs, _ = env.reset()
+            done = False
+            while not done:
+                action = policy_action(policy, obs)
+                obs, reward, terminated, truncated, _ = env.step(action)
+                done = terminated or truncated
+            total_reward += reward
+        results.append(total_reward / episodes)
+    
+    return np.mean(results)
 
 def plot_strategy(policy, filename=None):
-    player_sums = list(range(12, 22))   # meaningful player totals
+    player_sums = list(range(4, 22))   # meaningful player totals
     dealer_cards = list(range(1, 11))
     usable_ace_options = [True, False]
 
